@@ -12,7 +12,7 @@ class AppointmentsRepository implements IAppointmentsRepository {
   private appointments: Appointment[] = [];
 
   public async findByDate(date: Date): Promise<Appointment | undefined> {
-    const findAppointment = this.appointments.find(appointment =>
+    const findAppointment = await this.appointments.find(appointment =>
       isEqual(appointment.date, date),
       );
 
@@ -20,7 +20,7 @@ class AppointmentsRepository implements IAppointmentsRepository {
   }
 
   public async findAllInMonthFromProvider({ provider_id, month, year }: IFindAllInMonthFromProviderDTO): Promise<Appointment[]> {
-    const appointments = this.appointments.filter(
+    const appointments = await this.appointments.filter(
       appointment => {
         return (
           appointment.provider_id === provider_id &&
@@ -34,7 +34,7 @@ class AppointmentsRepository implements IAppointmentsRepository {
   }
 
   public async findAllInDayFromProvider({ provider_id, month, year, day }: IFindAllInDayFromProviderDTO): Promise<Appointment[]> {
-    const appointments = this.appointments.filter(
+    const appointments = await this.appointments.filter(
       appointment => {
         return (
           appointment.provider_id === provider_id &&
@@ -53,7 +53,7 @@ class AppointmentsRepository implements IAppointmentsRepository {
 
     Object.assign(appointment, { id: uuid(), date, provider_id, user_id });
 
-    this.appointments.push(appointment);
+    await this.appointments.push(appointment);
 
     return appointment;
   }
