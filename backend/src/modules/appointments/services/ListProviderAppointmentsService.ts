@@ -35,8 +35,6 @@ class ListProviderAppointmentsService {
         }
       );
 
-      console.log('it got at the db')
-
       await this.cacheProvider.save(
        cacheKey, appointments);
     }
