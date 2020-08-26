@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, ChangeEvent } from 'react';
 import { FiMail, FiUser, FiLock, FiArrowLeft, FiCamera } from 'react-icons/fi';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
@@ -19,14 +19,16 @@ import { useAuth } from '../../hooks/auth';
 interface ProfileFormData {
   name: string;
   email: string;
+  old_password: string;
   password: string;
+  password_confirmation: string;
 }
 
 const Profile: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const { addToast } = useToast();
   const history = useHistory();
-  const  { user } = useAuth();
+  const  { user, updateUser } = useAuth();
 
   // eslint-disable-next-line @typescript-eslint/ban-types
   const handleSubmit = useCallback(
@@ -36,28 +38,50 @@ const Profile: React.FC = () => {
 
         const schema = Yup.object().shape({
           name: Yup.string().required('Your name is required'),
-          email: Yup.string()
-            .required('An email is required')
-            .email('Type an invalid email'),
-          password: Yup.string().min(
-            6,
-            '6 characters are required in your password.',
-          ),
+          email: Yup.string().required('An email is required').email('Type an invalid email'),
+          old_password: Yup.string(),
+          password: Yup.string().when('old_password', {
+            is: val => !!val.length,
+            then: Yup.string().required(),
+            otherwise: Yup.string(),
+          }),
+          password_confirmation: Yup.string().when('old_password', {
+            is: val => !!val.length,
+            then: Yup.string().required('Required field'),
+            otherwise: Yup.string(),
+          })
+          .oneOf([Yup.ref('password')], 'Incorrect confirmation.'),
         });
 
         await schema.validate(data, {
           abortEarly: false,
         });
 
-        await api.post('/users', data);
+        const { name, email, old_password, password, password_confirmation } = data;
+
+        const formData = {
+          name,
+          email,
+          ...(old_password
+          ? {
+            old_password,
+            password,
+            password_confirmation,
+        }
+        : {}),
+      }
+
+        const response = await api.put('/profile', formData);
+
+        updateUser(response.data);
 
         addToast({
           type: 'success',
           title: 'Success!',
-          description: 'Now you can log on GoBarber',
+          description: 'Your profile was updated with success.',
         });
 
-        history.push('/');
+        history.push('/dashboard');
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
@@ -69,13 +93,35 @@ const Profile: React.FC = () => {
 
         addToast({
           type: 'error',
-          title: 'Subscription Error',
-          description: 'Check your data.',
+          title: 'Error at updating the profile',
+          description: 'Check your data and try again, please.',
         });
       }
     },
     [addToast, history],
   );
+
+  const handleAvatarChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const data = new FormData();
+
+      data.append('avatar', e.target.files[0]);
+
+      api.patch('/users/avatar', data).then((response) => {
+        updateUser(response.data);
+
+        addToast({
+          type: 'success',
+          title: 'The avatar was updated!',
+        });
+      });
+    }
+    }, [addToast, updateUser]);
+
+
+
+
+
 
   return (
     <Container>
@@ -96,9 +142,11 @@ const Profile: React.FC = () => {
             onSubmit={handleSubmit}>
             <AvatarInput>
               <img src={user.avatar_url} alt={user.name}/>
-              <button type="button">
+              <label htmlFor="avatar">
                 <FiCamera />
-              </button>
+                <input type="file" id="avatar" onChange={handleAvatarChange} />
+              </label>
+
             </AvatarInput>
 
             <h1>My account</h1>
