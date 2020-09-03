@@ -1,14 +1,24 @@
-import React, { useRef } from 'react';
-import { Image, View, ScrollView, KeyboardAvoidingView, Platform, TextInput } from 'react-native';
+import React, { useRef, useCallback } from 'react';
+import { Image, View, ScrollView, KeyboardAvoidingView, Platform, TextInput, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
+import * as Yup from 'yup';
+import api from '../../services/api';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
+import getValidationErrors from '../../utils/getValidationErrors';
+
 import { Container, Title, BackToSignInText, BackToSignIn } from './styles';
+
+interface SignUpFormData {
+  name: string;
+  email: string;
+  password: string;
+}
 
 import logoImg from '../../assets/logo.png';
 
@@ -17,6 +27,47 @@ const SignUp: React.FC = () => {
   const navigation = useNavigation<any>();
   const emailInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
+
+  const handleSignUp = useCallback(
+    async (data: SignUpFormData) => {
+      try {
+        formRef.current?.setErrors({});
+
+        const schema = Yup.object().shape({
+          name: Yup.string().required('Your name is required'),
+          email: Yup.string()
+            .required('An email is required')
+            .email('Type an invalid email'),
+          password: Yup.string().min(
+            6,
+            '6 characters are required in your password.',
+          ),
+        });
+
+        await schema.validate(data, {
+          abortEarly: false,
+        });
+
+        await api.post('/users', data);
+
+        Alert.alert('Success', 'Now you can access your GoBarber account!')
+
+        navigation.goBack();
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
+
+          formRef.current?.setErrors(errors);
+
+          return;
+        }
+
+        Alert.alert('Error', 'Check your data and try again.')
+
+      }
+    },
+    [],
+  );
 
   return (
     <>
@@ -27,7 +78,7 @@ const SignUp: React.FC = () => {
             <View>
               <Title>Create your account</Title>
             </View>
-            <Form onSubmit={() => {}} ref={formRef}>
+            <Form onSubmit={handleSignUp} ref={formRef}>
               <Input
                 name="name"
                 icon="user"
@@ -62,7 +113,7 @@ const SignUp: React.FC = () => {
                 onSubmitEditing={() => formRef.current.submitForm()}
               />
 
-              <Button onPress={() => formRef.current.submitForm()}>Go</Button>
+              <Button onPress={() => formRef.current.submitForm()}>Create my account</Button>
             </Form>
           </Container>
         </ScrollView>
