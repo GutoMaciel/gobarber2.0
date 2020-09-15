@@ -1,3 +1,7 @@
+<p align="center">
+  <img src=".github/logo.svg">
+</p>
+
 # GoBarber Mobile
 Através da aplicação Mobile, o usuário consegue visualizar os artistas disponíveis (prestadores de serviços de beleza), os horários disponíveis e fazer um agendamento.
 
@@ -14,7 +18,7 @@ Através da aplicação Mobile, o usuário consegue visualizar os artistas dispo
 
 
 <p align="center">
-  <img height="500" src="../.github/profile.png">
+  <img height="500" src="../.github/Profile.png">
 </p>
 
 # Tecnologias utilizadas
