@@ -8,6 +8,6 @@ Com a plataforma, prestadores de serviços conseguem disponibilizar suas agendas
 
 Para ver os diferentes clientes, selecione o cliente abaixo:
 
-* Back-end
-* Front-end
-* Mobile
+* [Back-end](https://github.com/GutoMaciel/gobarber2.0/tree/master/backend)
+* [Front-end](https://github.com/GutoMaciel/gobarber2.0/tree/master/frontend)
+* [Mobile](https://github.com/GutoMaciel/gobarber2.0/tree/master/gobarbermobile)
