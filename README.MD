@@ -1,7 +1,5 @@
-![Go Barber Logo](.github/logo.svg "GoBarber Logo")
-
 <p align="center">
-  <img width="460" height="300" src=".github/logo.svg">
+  <img src=".github/logo.svg">
 </p>
 
 # GoBarber
