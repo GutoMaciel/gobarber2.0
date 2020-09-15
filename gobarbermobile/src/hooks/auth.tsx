@@ -49,7 +49,7 @@ const AuthProvider: React.FC = ({ children }) => {
   useEffect(() => {
     async function loadStorageData(): Promise<void> {
 
-      // await AsyncStorage.clear();
+      await AsyncStorage.clear();
 
       const [token, user] = await AsyncStorage.multiGet([
         '@GoBarber:token',
