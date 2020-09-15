@@ -1,15 +1,18 @@
 import React, { useCallback, useRef } from 'react';
 import { Image, View, ScrollView, KeyboardAvoidingView, Platform, TextInput, Alert } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile'
 import { FormHandles } from '@unform/core'
 import * as Yup from 'yup';
+import Icon from 'react-native-vector-icons/Feather';
+
+import { useAuth } from '../../hooks/auth';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
-import { useAuth } from '../../hooks/auth';
+
+import logoImg from '../../assets/logo.png';
 
 import getValidationErrors from '../../utils/getValidationErrors';
 
@@ -20,14 +23,14 @@ interface SignInFormData {
   password: string;
 }
 
-import logoImg from '../../assets/logo.png';
 
 const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const passwordInputRef = useRef<TextInput>(null);
+
   const navigation = useNavigation<any>();
 
-  const { signIn } = useAuth();
+  const { signIn, user } = useAuth();
 
   const handleSignIn = useCallback(
     async (data: SignInFormData) => {
@@ -50,6 +53,9 @@ const SignIn: React.FC = () => {
           password: data.password,
         });
 
+        Alert.alert('Success', 'You are in');
+
+
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
@@ -67,14 +73,14 @@ const SignIn: React.FC = () => {
 
   return (
     <>
-      <KeyboardAvoidingView enabled style={{ flex: 1}}behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAvoidingView style={{ flex: 1}} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flex: 1 }}>
           <Container>
             <Image source={logoImg} />
             <View>
               <Title>Log on GoBarber</Title>
             </View>
-            <Form onSubmit={handleSignIn} ref={formRef}>
+            <Form ref={formRef} onSubmit={handleSignIn}>
               <Input
                 name="email"
                 icon="mail"
@@ -83,9 +89,7 @@ const SignIn: React.FC = () => {
                 autoCapitalize="none"
                 keyboardType="email-address"
                 returnKeyType="next"
-                onSubmitEditing={() => {
-                  passwordInputRef.current.focus();
-                }}
+                onSubmitEditing={() => {passwordInputRef.current?.focus()}}
               />
 
               <Input
@@ -95,15 +99,15 @@ const SignIn: React.FC = () => {
                 placeholder="Password"
                 secureTextEntry
                 returnKeyType="send"
-                onSubmitEditing={() => {formRef.current.submitForm()}}
+                onSubmitEditing={() => {formRef.current?.submitForm()}}
               />
 
-              <Button onPress={() => {formRef.current.submitForm()}}>Go</Button>
+              <Button onPress={() => {formRef.current?.submitForm()}}>Go</Button>
             </Form>
 
-            <ForgotPassword onPress={() => (console.log(data))}>
+            {/* <ForgotPassword onPress={() => (console.log())}>
               <ForgotPasswordText>Password Recover</ForgotPasswordText>
-            </ForgotPassword>
+            </ForgotPassword> */}
           </Container>
         </ScrollView>
 

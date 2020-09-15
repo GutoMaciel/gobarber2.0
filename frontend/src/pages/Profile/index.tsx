@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import React, { useCallback, useRef, ChangeEvent } from 'react';
 import { FiMail, FiUser, FiLock, FiArrowLeft, FiCamera } from 'react-icons/fi';
 import { FormHandles } from '@unform/core';
@@ -8,7 +9,6 @@ import api from '../../services/api';
 import getValidationErrors from '../../utils/getValidationErrors';
 
 import { useToast } from '../../hooks/toast';
-
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
@@ -28,7 +28,7 @@ const Profile: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const { addToast } = useToast();
   const history = useHistory();
-  const  { user, updateUser } = useAuth();
+  const { user, updateUser } = useAuth();
 
   // eslint-disable-next-line @typescript-eslint/ban-types
   const handleSubmit = useCallback(
@@ -38,38 +38,47 @@ const Profile: React.FC = () => {
 
         const schema = Yup.object().shape({
           name: Yup.string().required('Your name is required'),
-          email: Yup.string().required('An email is required').email('Type an invalid email'),
+          email: Yup.string()
+            .required('An email is required')
+            .email('Type an invalid email'),
           old_password: Yup.string(),
           password: Yup.string().when('old_password', {
             is: val => !!val.length,
             then: Yup.string().required(),
             otherwise: Yup.string(),
           }),
-          password_confirmation: Yup.string().when('old_password', {
-            is: val => !!val.length,
-            then: Yup.string().required('Required field'),
-            otherwise: Yup.string(),
-          })
-          .oneOf([Yup.ref('password')], 'Incorrect confirmation.'),
+          password_confirmation: Yup.string()
+            .when('old_password', {
+              is: val => !!val.length,
+              then: Yup.string().required('Required field'),
+              otherwise: Yup.string(),
+            })
+            .oneOf([Yup.ref('password')], 'Incorrect confirmation.'),
         });
 
         await schema.validate(data, {
           abortEarly: false,
         });
 
-        const { name, email, old_password, password, password_confirmation } = data;
+        const {
+          name,
+          email,
+          old_password,
+          password,
+          password_confirmation,
+        } = data;
 
         const formData = {
           name,
           email,
           ...(old_password
-          ? {
-            old_password,
-            password,
-            password_confirmation,
-        }
-        : {}),
-      }
+            ? {
+                old_password,
+                password,
+                password_confirmation,
+              }
+            : {}),
+        };
 
         const response = await api.put('/profile', formData);
 
@@ -98,30 +107,28 @@ const Profile: React.FC = () => {
         });
       }
     },
-    [addToast, history],
+    [addToast, history, updateUser],
   );
 
-  const handleAvatarChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const data = new FormData();
+  const handleAvatarChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files) {
+        const data = new FormData();
 
-      data.append('avatar', e.target.files[0]);
+        data.append('avatar', e.target.files[0]);
 
-      api.patch('/users/avatar', data).then((response) => {
-        updateUser(response.data);
+        api.patch('/users/avatar', data).then(response => {
+          updateUser(response.data);
 
-        addToast({
-          type: 'success',
-          title: 'The avatar was updated!',
+          addToast({
+            type: 'success',
+            title: 'The avatar was updated!',
+          });
         });
-      });
-    }
-    }, [addToast, updateUser]);
-
-
-
-
-
+      }
+    },
+    [addToast, updateUser],
+  );
 
   return (
     <Container>
@@ -133,52 +140,51 @@ const Profile: React.FC = () => {
         </div>
       </header>
       <Content>
-          <Form
-            ref={formRef}
-            initialData={{
-              name: user.name,
-              email: user.email,
-            }}
-            onSubmit={handleSubmit}>
-            <AvatarInput>
-              <img src={user.avatar_url} alt={user.name}/>
-              <label htmlFor="avatar">
-                <FiCamera />
-                <input type="file" id="avatar" onChange={handleAvatarChange} />
-              </label>
+        <Form
+          ref={formRef}
+          initialData={{
+            name: user.name,
+            email: user.email,
+          }}
+          onSubmit={handleSubmit}
+        >
+          <AvatarInput>
+            <img src={user.avatar_url} alt={user.name} />
+            <label htmlFor="avatar">
+              <FiCamera />
+              <input type="file" id="avatar" onChange={handleAvatarChange} />
+            </label>
+          </AvatarInput>
 
-            </AvatarInput>
+          <h1>My account</h1>
 
-            <h1>My account</h1>
+          <Input name="name" icon={FiUser} placeholder="Name" />
+          <Input name="email" icon={FiMail} placeholder="email" />
 
-            <Input name="name" icon={FiUser} placeholder="Name" />
-            <Input name="email" icon={FiMail} placeholder="email" />
+          <Input
+            containerStyle={{ marginTop: 24 }}
+            name="old_password"
+            icon={FiLock}
+            type="password"
+            placeholder="Your current password"
+          />
 
-            <Input
-              containerStyle={{ marginTop: 24}}
-              name="old_password"
-              icon={FiLock}
-              type="password"
-              placeholder="Your current password"
-            />
+          <Input
+            name="password"
+            icon={FiLock}
+            type="password"
+            placeholder="The new password"
+          />
 
-            <Input
-              name="password"
-              icon={FiLock}
-              type="password"
-              placeholder="The new password"
-            />
+          <Input
+            name="password_confirmation"
+            icon={FiLock}
+            type="password"
+            placeholder="New password confirmation"
+          />
 
-            <Input
-              name="password_confirmation"
-              icon={FiLock}
-              type="password"
-              placeholder="New password confirmation"
-            />
-
-
-            <Button type="submit">Update profile</Button>
-          </Form>
+          <Button type="submit">Update profile</Button>
+        </Form>
       </Content>
     </Container>
   );

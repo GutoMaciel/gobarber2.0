@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/core';
 import { View, Button } from 'react-native';
-import { useAuth } from '../../hooks/auth';
-import Icon from 'react-native-vector-icons/Feather'
-
 import api from '../../services/api';
+import Icon from 'react-native-vector-icons/Feather'
+import { useAuth } from '../../hooks/auth';
+
 
 import { Container, Header, HeaderTitle, UserName, ProfileButton, UserAvatar, ProvidersList, ProviderContainer, ProviderAvatar, ProviderInfo, ProviderName, ProviderMeta, ProviderMetaText, ProvidersListTitle } from './styles';
 
@@ -15,15 +15,15 @@ export interface Provider {
 }
 
 const Dashboard: React.FC = () => {
-  const { signOut, user } = useAuth();
-  const { navigate } = useNavigation();
   const [providers, setProviders] = useState<Provider[]>([])
+  const { user } = useAuth();
+  const { navigate } = useNavigation();
 
   useEffect(() => {
     api.get('providers').then(response => {
       setProviders(response.data);
-    })
-  }, [])
+    });
+  }, []);
 
   const navigateToProfile = useCallback(() => {
     navigate('Profile');
@@ -32,7 +32,6 @@ const Dashboard: React.FC = () => {
   const navigateToCreateAppointment = useCallback((providerId: string) => {
     navigate('CreateAppointment', { providerId });
   }, [navigate]);
-
 
 
   return (

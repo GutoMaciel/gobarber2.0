@@ -4,9 +4,9 @@ import api from '../services/api';
 
 interface User {
   id: string;
-  avatar_url: string;
   name: string;
   email: string;
+  avatar_url: string;
 }
 
 interface AuthState {
@@ -23,13 +23,24 @@ interface SignInCredentials {
 interface AuthContextData {
   // eslint-disable-next-line @typescript-eslint/ban-types
   user: User;
+  loading: boolean;
   signIn(credentials: SignInCredentials): Promise<void>;
   signOut(): void;
-  updateUser(user: User): void;
-  loading: boolean;
+  updateUser(user: User): Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
+
+function useAuth(): AuthContextData {
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error('UseAuth must be used within an AuthProvider.');
+  }
+
+  return context;
+}
+
 
 const AuthProvider: React.FC = ({ children }) => {
   const [data, setData] = useState<AuthState>({} as AuthState);
@@ -37,6 +48,9 @@ const AuthProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     async function loadStorageData(): Promise<void> {
+
+      // await AsyncStorage.clear();
+
       const [token, user] = await AsyncStorage.multiGet([
         '@GoBarber:token',
         '@GoBarber:user',
@@ -55,7 +69,7 @@ const AuthProvider: React.FC = ({ children }) => {
   }, [])
 
   const signIn = useCallback(async ({ email, password }) => {
-    const response = await api.post('sessions', {
+    const response = await api.post('/sessions', {
       email,
       password,
     });
@@ -93,15 +107,5 @@ const AuthProvider: React.FC = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-
-function useAuth(): AuthContextData {
-  const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error('UseAuth must be used within an AuthProvider.');
-  }
-
-  return context;
-}
 
 export { AuthProvider, useAuth };
