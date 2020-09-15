@@ -1,4 +1,4 @@
-![Go Barber Logo]('/assets/logo.svg' "GoBarber Logo")
+![Go Barber Logo](assets/logo.svg "GoBarber Logo")
 
 # GoBarber
 GoBarber é uma aplicação desenvolvida durante o bootcamp GoStack da Rocketseat que têm como objetivo conectar clientes a prestadores de serviços.
