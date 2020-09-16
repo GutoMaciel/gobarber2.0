@@ -6,14 +6,14 @@
 Através da aplicação Web, o prestador de serviço consegue visualizar os agendamentos realizados pelos seus clientes.
 
 <p align="center">
-  <img height="500" src="../.github/logon.png">
-  <img height="500" src="../.github/logon2.png">
-  <img height="500" src="../.github/signin.png">
+  <img height="300" src="../.github/logon.png">
+  <img height="300" src="../.github/logon2.png">
+  <img height="300" src="../.github/signin.png">
 </p>
 
 <p align="center">
-  <img height="500" src="../.github/appointments2.png">
-  <img height="500" src="../.github/profile2.png">
+  <img height="300" src="../.github/appointments2.png">
+  <img height="300" src="../.github/profile2.png">
 </p>
 
 
