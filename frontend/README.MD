@@ -16,7 +16,7 @@ Através da aplicação Web, o prestador de serviço consegue visualizar os agen
 </p>
 
 <p align="center">
-  <img height="500" src="../.github/appointments2.png">
+  <img height="700" src="../.github/appointments2.png">
 </p>
 
 
