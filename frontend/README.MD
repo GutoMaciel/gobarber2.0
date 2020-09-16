@@ -2,7 +2,7 @@
   <img src="../.github/logo.svg">
 </p>
 
-# GoBarber Mobile
+# GoBarber Web
 Através da aplicação Web, o prestador de serviço consegue visualizar os agendamentos realizados pelos seus clientes.
 
 <p align="center">
