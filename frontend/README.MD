@@ -8,7 +8,7 @@ Através da aplicação Web, o prestador de serviço consegue visualizar os agen
 <p align="center">
   <img height="300" src="../.github/logon.png">
   <img height="300" src="../.github/logon2.png">
-  <img height="300" src="../.github/signin.png">
+  <img height="300" src="../.github/webSignin.png">
 </p>
 
 <p align="center">
